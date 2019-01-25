@@ -4,40 +4,57 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using StoreParser.Business;
+using StoreParser.Dtos;
 using StoreParser.Models;
 
 namespace StoreParser.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IParseService _requestTypeService;
+
+        public HomeController(IParseService requestTypeService)
+        {
+            _requestTypeService = requestTypeService;
+        }
+
+        public IActionResult Parse()
+        {
+            return View();
+        }
+
+        [HttpPost]       
+        public IActionResult Parse(ParsingConfiguration config)
+        {
+            try
+            {
+                var newItems = _requestTypeService.AddItems(config);
+                return View("NewItemsList", newItems);
+            }
+            catch (Exception)
+            {
+                ViewData["Message"] = "A  exception has occurred";
+                return View("NewItemsList", new List<NewItemDto>());
+            }           
+        }
+
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction(nameof(List));
         }
 
-        public IActionResult About()
+        public IActionResult List()
         {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
+            var resualt = _requestTypeService.GetAll();
+            return View(resualt);
         }
 
-        public IActionResult Contact()
+        public IActionResult Details(int id)
         {
-            ViewData["Message"] = "Your contact page.";
+            var resualt = _requestTypeService.GetById(id);
+            return View(resualt);
+        }     
 
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }
