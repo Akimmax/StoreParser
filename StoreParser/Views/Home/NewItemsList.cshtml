@@ -1,0 +1,64 @@
+﻿@using StoreParser.Dtos
+@model IEnumerable<NewItemDto>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+
+                @if (Model.Any())
+                {
+                    <h2>Added following items.  <a asp-action="List">To items list</a></h2>
+                    <div class="table">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        <b>ImageSource</b>
+                                    </td>
+                                    <td>
+                                        <b>Description</b>
+                                    </td>
+                                    <th>
+                                        <b>ProductUrl</b>
+                                    </th>
+                                    <th>
+                                        <b>Price</b>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@item.ImageSource" alt="@item.Description">
+                                        </td>
+                                        <td>
+                                            @item.Description
+                                        </td>
+                                        <td>
+
+                                            <a href="@item.ProductUrl">Product link</a>
+                                        </td>
+                                        <td>
+                                            @item.Price
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                else
+                {
+                    <h3>@ViewData["Message"]</h3>
+                    <h3>No items found</h3>
+                }
+
+            </div>
+        </div>
+    </div>

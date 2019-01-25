@@ -1,0 +1,81 @@
+﻿@using StoreParser.Dtos
+@model ItemDto
+
+<div class="container">
+    <div class="row col-xs-12 col-sm-10 col-md-8 col-sm-push-1 col-md-push-2">
+        <div>
+            <h3>@Model.Description</h3>
+        </div>
+        <div>
+            <div class="row">
+                <div class="col-md-6 product_img">
+                    <img src="@Model.ImageSource" alt="@Model.Description" class="img-responsive">
+                </div>
+                <div class="col-md-6 product_content">
+                    <h4>Product code in store : <span>@Model.Code</span></h4>
+
+                    <p>@Model.Description</p>
+
+                    <h3 class="cost">Last price in store @(Model.Prices.Last().Price.ToString("N0")) <span>UAH</span></h3>
+
+                    <div class="row">
+
+                        <table style="width: 100%">
+                            <tr>
+                                <th>Date</th>
+                                <th>Price</th>
+                                <th>Price changes</th>
+                            </tr>
+
+                            @for (int i = 0; i < Model.Prices.Count(); i++)
+                            {
+
+                                <tr>
+                                    <td>
+                                        @Model.Prices.ToList()[i].Date.ToString("MM/dd/yyyy"):
+                                    </td>
+
+                                    <td>
+                                        <span>@Model.Prices.ToList()[i].Price.ToString("N0")</span><span>UAH</span>
+                                    </td>
+                                    <td>
+                                        @{
+                                            if (i > 0 && Model.Prices.ToList()[i].Price > Model.Prices.ToList()[i - 1].Price)
+                                            {
+                                                <span>&#8593;</span>
+                                            }
+                                            else if (i > 0 && Model.Prices.ToList()[i].Price < Model.Prices.ToList()[i - 1].Price)
+                                            {
+                                                <span>&#8595;</span>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var price in Model.Prices)
+                            {
+
+                            }
+                        </table>
+
+                    </div>
+
+                    <div class="row">
+                        <button onclick="location.href='/Home/Parse';" style="width: 100%" type="button" class="btn btn-outline-primary">Update information</button>
+                    </div>
+
+                    <div class="row">
+                        <button onclick="location.href='@Model.ProductUrl';" style="width: 100%" type="button" class="btn btn-primary">View product in store</button>
+                    </div>
+                    <div class="row">
+                        <a asp-action="List">To items list</a>
+                    </div>
+                </div>
+
+            </div>
+           
+        </div>
+    </div>   
+</div>
+
+

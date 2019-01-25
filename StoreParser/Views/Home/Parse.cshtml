@@ -1,0 +1,37 @@
+﻿@using StoreParser.Dtos
+@model ParsingConfiguration
+
+<div class="container">
+    <div class="row">
+        <div class="row col-xs-12 col-sm-8 col-md-6 col-sm-push-2 col-md-push-3">
+            <h2>Add new items</h2>
+            <form asp-action="Parse">
+                <div class="form-group col-md-12">
+                    <label asp-for="Path" class="control-label">Enter page url</label>
+                    <input asp-for="Path" class="form-control" type="text" size="100" value="https://www.citrus.ua/smartfony/" />
+                    <span asp-validation-for="Path" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12">
+                    <label asp-for="Stategy" class="control-label">Select store</label>
+                    <select asp-for="Stategy"
+                            class="form-control custom-select" id="Select parsed store">
+                        <option value="@(ParseStategyEnum.CitrusParserStategy)">Citrus</option>
+                        <option value="@(ParseStategyEnum.Other)">Other</option>
+                    </select>
+                    <span asp-validation-for="Stategy" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12">
+                    <label asp-for="AmountItems" class="control-label">How many first items </label>
+                    <input asp-for="AmountItems" min="1" max="100" class="form-control" value="10" />
+                    <span asp-validation-for="AmountItems" class="text-danger"></span>
+                </div>
+                <div class="form-group col-md-12">
+                    <input type="submit" value="Get items" class="btn btn-primary btn-lg" />
+                </div>
+            </form>
+            <div>
+                <a asp-action="List">To items list</a>
+            </div>
+        </div>        
+    </div>    
+</div>
