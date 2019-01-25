@@ -9,6 +9,15 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Reflection;
+using System.IO;
+using StoreParser.Data;
+using StoreParser.Business;
+using System.Text;
+using AutoMapper;
 
 namespace StoreParser
 {
@@ -31,8 +40,30 @@ namespace StoreParser
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-
+            services.AddCors();
+            services.AddMvc();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<DatabaseContext>(options =>
+            options.UseMySql(connectionString));
+
+            services.AddDbContext<DatabaseContext>(options =>
+           options.UseMySql(connectionString));
+
+            services.AddScoped<IUnitOfWork, ParserUnitOfWork>();
+            services.AddScoped<IParseService, ItemService>();
+            services.AddScoped<Parser>();
+
+            services.AddAutoMapper();
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +82,7 @@ namespace StoreParser
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseMvc();
 
             app.UseMvc(routes =>
             {
@@ -58,6 +90,12 @@ namespace StoreParser
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseCors(x => x
+              .AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials());
         }
     }
 }
