@@ -7,9 +7,9 @@ namespace StoreParser.Data.Repositories
 {
     public class ItemsRepository : IRepository<Item>
     {
-        private DatabaseContext db;
+        private EFContext db;
 
-        public ItemsRepository(DatabaseContext context)
+        public ItemsRepository(EFContext context)
         {
             this.db = context;
         }

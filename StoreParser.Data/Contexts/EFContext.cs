@@ -2,9 +2,9 @@
 
 namespace StoreParser.Data
 {
-    public class DatabaseContext : DbContext
+    public class EFContext : DbContext
     {
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
+        public EFContext(DbContextOptions<EFContext> options) : base(options)
         {
             Database.EnsureCreated();
         }

@@ -7,23 +7,24 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace StoreParser.Business
 {
-    public class ItemService : IParseService
+    public class ItemServiceAsync : IParseService
     { 
         Parser _parser;
         private readonly IUnitOfWork _uow;
         private readonly IMapper _mapper;
 
-        public ItemService(IUnitOfWork uow, Parser parser, IMapper mapper)
+        public ItemServiceAsync(IUnitOfWork uow, Parser parser, IMapper mapper)
         {
             _uow = uow;
             _parser = parser;
             _mapper = mapper;
         }
 
-        public IEnumerable<NewItemDto> AddItems(ParsingConfiguration config)
+        public async Task<IEnumerable<NewItemDto>> AddItemsAsync(ParsingConfiguration config)
         {
             IParserStategy strategy;//Use strategy pattern
 
@@ -32,7 +33,7 @@ namespace StoreParser.Business
                 case ParseStategyEnum.CitrusParserStategy:
                     strategy = new CitrusParserStategy();
                     break;
-                
+
                 case ParseStategyEnum.Other:
                     strategy = new CitrusParserStategy();
                     break;
@@ -45,26 +46,31 @@ namespace StoreParser.Business
             _parser.SetStrategy(strategy);
 
             var items = _parser.GetAllItems(config.Path, config.AmountItems);//3) Polimorfism
-            
+
             var newRecords = _mapper.Map<IEnumerable<NewItemDto>>(items);
 
             foreach (ParseResultItem i in items)
             {
-                var storedItem = _uow.Items.FindFirst(e => e.Code == i.Code);//use 'code' as unique id for items from one store
+                Expression<Func<Item, bool>> FilterByCode(string code)
+                {
+                    return x => x.Code == code;
+                }
+
+                var storedItem = await _uow.ItemsAsync.FindFirstAsync(FilterByCode(i.Code));//use 'code' as unique id for items from one store
 
                 if (storedItem == null)
                 {
-                    var item = _mapper.Map<Item>(i);                  
+                    var item = _mapper.Map<Item>(i);
 
                     var price = new Price
-                    {
+                    {                        
                         Item = item,
                         CurrentPrice = i.Price,
                         Date = DateTime.Now
                     };
 
-                    _uow.Items.Create(item);
-                    _uow.Prices.Create(price);
+                    await  _uow.ItemsAsync.CreateAsync(item);
+                    await  _uow.PricesAsync.CreateAsync(price);
                 }
                 else
                 {
@@ -74,7 +80,7 @@ namespace StoreParser.Business
                         CurrentPrice = i.Price,
                         Date = DateTime.Now
                     };
-                    _uow.Prices.Create(price);
+                    await  _uow.PricesAsync.CreateAsync(price);
                 }
             }
             _uow.Save();
@@ -82,11 +88,11 @@ namespace StoreParser.Business
             return newRecords;
         }
 
-        public IEnumerable<ItemDto> GetAll()
+        public async Task<IEnumerable<ItemDto>> GetAllAsync()
         {
             IList<ItemDto> list = new List<ItemDto>();
 
-            var items = _uow.Items.GetAll();            
+            var items = await  _uow.ItemsAsync.GetAllAsync();
 
             foreach (var item in items)
             {
@@ -99,9 +105,9 @@ namespace StoreParser.Business
             return list;
         }
 
-        public ItemDto GetById(int id)
+        public async Task<ItemDto> GetByIdAsync(int id)
         {
-            var item = _uow.Items.FindFirst(e => e.Id == id);
+            var item = await _uow.ItemsAsync.FindFirstAsync(e => e.Id == id);
 
             ItemDto itemDto = _mapper.Map<ItemDto>(item);
             itemDto.Prices = item.Prices.Select(pr => new PriceDto { Date = pr.Date, Price = pr.CurrentPrice });
@@ -109,9 +115,9 @@ namespace StoreParser.Business
             return itemDto;
         }
 
-        public Task<IEnumerable<ItemDto>> GetAllAsync() { throw new NotImplementedException(); }
-        public Task<IEnumerable<NewItemDto>> AddItemsAsync(ParsingConfiguration config) { throw new NotImplementedException(); }
-        public Task<ItemDto> GetByIdAsync(int id) { throw new NotImplementedException(); }
+        public IEnumerable<ItemDto> GetAll() { throw new NotImplementedException(); }
+        public IEnumerable<NewItemDto> AddItems(ParsingConfiguration config) { throw new NotImplementedException(); }
+        public ItemDto GetById(int id) { throw new NotImplementedException(); }
 
     }
 }

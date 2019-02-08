@@ -6,9 +6,9 @@ namespace StoreParser.Data.Repositories
 {
     public class PricesRepository : IRepository<Price>
     {
-        private DatabaseContext db;
+        private EFContext db;
 
-        public PricesRepository(DatabaseContext context)
+        public PricesRepository(EFContext context)
         {
             this.db = context;
         }

@@ -2,19 +2,23 @@
 
 namespace StoreParser.Data
 {
-    public class ParserUnitOfWork : IUnitOfWork
+    public class EFUnitOfWork : IUnitOfWork
     {
-        private readonly DatabaseContext dbContext;
+        private readonly EFContext dbContext;
 
-        public ParserUnitOfWork(DatabaseContext context)
+        public EFUnitOfWork(EFContext context)
         {
             dbContext = context;
             Items = new ItemsRepository(context);
             Prices = new PricesRepository(context);
+            ItemsAsync = new ItemsRepositoryAsync(context);
+            PricesAsync = new PricesRepositoryAsync(context);
         }
 
         public IRepository<Item> Items { get; }
         public IRepository<Price> Prices { get; }
+        public  IRepositoryAsync<Item> ItemsAsync { get; }
+        public  IRepositoryAsync<Price> PricesAsync { get; }
 
         public void Save()
         {
