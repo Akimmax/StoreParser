@@ -7,10 +7,10 @@ using System.Linq.Expressions;
 
 namespace StoreParser.Data.Repositories
 {
-    public class MongoRep:IRepository<Item>
+    public class MongoItemsRepository: IRepository<Item>
     {
         private MongoContext db;
-        public MongoRep(MongoContext context)
+        public MongoItemsRepository(MongoContext context)
         {
             this.db = context;
         }

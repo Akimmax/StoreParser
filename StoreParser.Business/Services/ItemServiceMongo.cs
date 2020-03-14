@@ -10,119 +10,35 @@ using StoreParser.Data.Repositories;
 
 namespace StoreParser.Business
 {
-    public class ItemServiceMongo : IParseService
-    { 
-        Parser _parser;
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
-        private MongoContext mongoContext;
-        private MongoRep rep;
-        public ItemServiceMongo(IUnitOfWork uow, Parser parser, IMapper mapper)
+    public class ItemServiceMongo: ItemService
+    {
+        public ItemServiceMongo(IUnitOfWork uow, Parser parser, IMapper mapper): base( uow,  parser,  mapper)
         {
-            _uow = uow;
-            _parser = parser;
-            _mapper = mapper;
-
-            mongoContext = new MongoContext("");
-            rep = new Data.Repositories.MongoRep(mongoContext);
         }
 
-        public IEnumerable<NewItemDto> AddItems(ParsingConfiguration config)
+        protected override void SaveNewItem(ParseResultItem itemDto)
         {
-            IParserStategy strategy;//Use strategy pattern
+            var item = _mapper.Map<Item>(itemDto);
+            item.Id = item.GetHashCode();
 
-            switch (config.Stategy)
+            item.Prices.Add(new Price
             {
-                case ParseStategyEnum.CitrusParserStategy:
-                    strategy = new CitrusParserStategy();
-                    break;
-                
-                case ParseStategyEnum.Other:
-                    strategy = new CitrusParserStategy();
-                    break;
+                CurrentPrice = itemDto.Price,
+                Date = DateTime.Now
+            });
 
-                default:
-                    strategy = new CitrusParserStategy();
-                    break;
-            }
-
-            _parser.SetStrategy(strategy);
-
-            var items = _parser.GetAllItems(config.Path, config.AmountItems);//3) Polimorfism
-            
-            var newRecords = _mapper.Map<IEnumerable<NewItemDto>>(items);
-
-            foreach (ParseResultItem i in items)
-            {
-                var storedItem = _uow.Items.FindFirst(e => e.Code == i.Code);//use 'code' as unique id for items from one store
-
-                if (storedItem == null)
-                {
-                    var item = _mapper.Map<Item>(i);
-                    item.Id = item.GetHashCode();
-
-                    item.Prices.Add(new Price
-                    {
-                        CurrentPrice = i.Price,
-                        Date = DateTime.Now
-                    });
-
-                    _uow.Items.Create(item);
-                }
-                else
-                {
-
-                    storedItem.Prices.Add(new Price
-                    {
-                        CurrentPrice = i.Price,
-                        Date = DateTime.Now
-                    });
-                    _uow.Items.Create(storedItem);
-                }
-            }
-            _uow.Save();
-
-            return newRecords;
+            _uow.Items.Create(item);
         }
 
-        public IEnumerable<ItemDto> GetAll()
+        protected override void UpdateExistingItem(ParseResultItem itemDto, Item storedItem)
         {
-            //IList<ItemDto> list = new List<ItemDto>();
-
-            //var items = _uow.Items.GetAll();
-
-            //foreach (var item in items)
-            //{
-            //    ItemDto itemDto = _mapper.Map<ItemDto>(item);
-            //    itemDto.Prices = item.Prices.Select(pr => new PriceDto { Date = pr.Date, Price = pr.CurrentPrice });
-
-            //    list.Add(itemDto);
-            //}
-
-
-            IList<ItemDto> list = new List<ItemDto>();
-
-            var items = rep.GetAll();
-
-            foreach (var item in items)
+            storedItem.Prices.Add(new Price
             {
-                ItemDto itemDto = _mapper.Map<ItemDto>(item);
-                itemDto.Prices = item.Prices.Select(pr => new PriceDto { Date = pr.Date, Price = pr.CurrentPrice });
-                list.Add(itemDto);
-            }
-
-            return list;
+                CurrentPrice = itemDto.Price,
+                Date = DateTime.Now
+            });
+            _uow.Items.Create(storedItem);
         }
-
-        public ItemDto GetById(int id)
-        {           
-            var item = _uow.Items.Get(id);
-
-            ItemDto itemDto = _mapper.Map<ItemDto>(item);
-            itemDto.Prices = item.Prices.Select(pr => new PriceDto { Date = pr.Date, Price = pr.CurrentPrice });
-
-            return itemDto;
-        }
-
     }
 }
+

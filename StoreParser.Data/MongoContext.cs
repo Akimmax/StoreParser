@@ -7,10 +7,8 @@ namespace StoreParser.Data
     {
         public MongoContext(string connectionString)
         {
-            var connectionString1 = "mongodb://localhost/test";
-
-            var connection = new MongoUrlBuilder(connectionString1);
-            MongoClient client = new MongoClient(connectionString1);
+            var connection = new MongoUrlBuilder(connectionString);
+            MongoClient client = new MongoClient(connectionString);
             database = client.GetDatabase(connection.DatabaseName);
         }
 
