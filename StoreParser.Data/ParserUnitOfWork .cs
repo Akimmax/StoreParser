@@ -9,7 +9,8 @@ namespace StoreParser.Data
         public ParserUnitOfWork(DatabaseContext context)
         {
             dbContext = context;
-            Items = new ItemsRepository(context);
+            //Items = new ItemsRepository(context);
+            Items = new MongoRep(new MongoContext("")); 
             Prices = new PricesRepository(context);
         }
 

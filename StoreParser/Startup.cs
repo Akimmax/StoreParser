@@ -52,7 +52,8 @@ namespace StoreParser
            options.UseMySql(connectionString));
 
             services.AddScoped<IUnitOfWork, ParserUnitOfWork>();
-            services.AddScoped<IParseService, ItemService>();
+            //services.AddScoped<IParseService, ItemService>(); //==>
+            services.AddScoped<IParseService, ItemServiceMongo>();
             services.AddScoped<Parser>();
 
             services.AddAutoMapper();
