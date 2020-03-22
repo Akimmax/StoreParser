@@ -44,15 +44,24 @@ namespace StoreParser
             services.AddMvc();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<DatabaseContext>(options =>
-            options.UseMySql(connectionString));
 
-            services.AddDbContext<DatabaseContext>(options =>
-           options.UseMySql(connectionString));
+            var databaseType = Configuration["DatabaseSettings:DatabaseType"];
 
-            services.AddScoped<IUnitOfWork, ParserUnitOfWork>();
-            services.AddScoped<IParseService, ItemService>();
+            if (databaseType == "mongodb")
+            {
+                string mongoConnectionString = Configuration.GetConnectionString("MongoConnection");
+                services.AddScoped<MongoContext>(s => new MongoContext(mongoConnectionString));
+                services.AddScoped<IUnitOfWork, MongoUnitOfWork>();
+                services.AddScoped<IParseService, ItemServiceMongo>();//TODO Refactor Sql Repositories  to use only one Item Service for all database types
+            }
+            else {
+                string connectionString = Configuration.GetConnectionString("DefaultConnection");
+                services.AddDbContext<EntityFrameworkContext>(options =>
+                options.UseMySql(connectionString));
+                services.AddScoped<IUnitOfWork, EntityFrameworkUnitOfWork>();
+                services.AddScoped<IParseService, ItemService>();
+            }
+
             services.AddScoped<Parser>();
 
             services.AddAutoMapper();

@@ -12,8 +12,8 @@ namespace StoreParser.Business
     public class ItemService : IParseService
     { 
         Parser _parser;
-        private readonly IUnitOfWork _uow;
-        private readonly IMapper _mapper;
+        protected readonly IUnitOfWork _uow;
+        protected readonly IMapper _mapper;
 
         public ItemService(IUnitOfWork uow, Parser parser, IMapper mapper)
         {
@@ -47,33 +47,21 @@ namespace StoreParser.Business
             
             var newRecords = _mapper.Map<IEnumerable<NewItemDto>>(items);
 
-            foreach (ParseResultItem i in items)
+
+
+            foreach (ParseResultItem itemDto in items)
             {
-                var storedItem = _uow.Items.FindFirst(e => e.Code == i.Code);//use 'code' as unique id for items from one store
+                //use 'code' as unique id for items from one store 
+                var storedItem = _uow.Items.FindFirst(e => e.Code == itemDto.Code);//TODO Refactor to make one request for all items
+
 
                 if (storedItem == null)
                 {
-                    var item = _mapper.Map<Item>(i);                  
-
-                    var price = new Price
-                    {
-                        Item = item,
-                        CurrentPrice = i.Price,
-                        Date = DateTime.Now
-                    };
-
-                    _uow.Items.Create(item);
-                    _uow.Prices.Create(price);
+                    SaveNewItem(itemDto);
                 }
                 else
                 {
-                    var price = new Price
-                    {
-                        Item = storedItem,
-                        CurrentPrice = i.Price,
-                        Date = DateTime.Now
-                    };
-                    _uow.Prices.Create(price);
+                    UpdateExistingItem(itemDto, storedItem);
                 }
             }
             _uow.Save();
@@ -106,6 +94,33 @@ namespace StoreParser.Business
             itemDto.Prices = item.Prices.Select(pr => new PriceDto { Date = pr.Date, Price = pr.CurrentPrice });
 
             return itemDto;
+        }
+
+        protected virtual void SaveNewItem(ParseResultItem itemDto)
+        {
+            var item = _mapper.Map<Item>(itemDto);
+            item.Id = item.GetHashCode();
+
+            var price = new Price
+            {
+                Item = item,
+                CurrentPrice = itemDto.Price,
+                Date = DateTime.Now
+            };
+
+            _uow.Items.Create(item);
+            _uow.Prices.Create(price);
+        }
+
+        protected virtual void UpdateExistingItem(ParseResultItem itemDto, Item storedItem)
+        {
+            var price = new Price
+            {
+                Item = storedItem,
+                CurrentPrice = itemDto.Price,
+                Date = DateTime.Now
+            };
+            _uow.Prices.Create(price);
         }
 
     }
