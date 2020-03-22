@@ -16,6 +16,7 @@ namespace StoreParser.Business
         private bool isGetsAllItem = false;
         private string correctedUrl;
         private Regex regexDeleteDuplicatedPrefix = new Regex("\\/.*?\\/");
+        private HtmlLoader loader = new HtmlLoader();
 
         public IList<ParseResultItem> GetAllItems(string url)//1) Encapsulation, prevents access to implementation details. Strategy provide one public method to using
         {
@@ -25,11 +26,8 @@ namespace StoreParser.Business
         public IList<ParseResultItem> GetAllItems(string url, int limit)
         {
             SetCorrectedUrl(url);
-            HtmlWeb web = new HtmlWeb();
-            HtmlDocument doc = web.Load(url);
 
-            GetAllItems(doc, limit);
-
+            GetAllItems(loader.LoadHtml(url), limit);
             return itemsList;
         }
 
@@ -67,7 +65,7 @@ namespace StoreParser.Business
 
                 string codeSring = item.SelectSingleNode(".//div[@class='product-card__code']").InnerHtml;
                 string code = codeSring.Trim('\n').Substring(5).Trim();
-
+               
                 string description = item.SelectSingleNode(".//div[@class='product-card__preview']/a").Attributes["title"].Value;
 
                 string relativeUrl = item.SelectSingleNode(".//div[@class='product-card__name']/a").Attributes["href"].Value;
@@ -114,10 +112,9 @@ namespace StoreParser.Business
             {
                 correctedUrl = url.Substring(0, index + 1);
             }
-                
+
             return correctedUrl;
         }
-        
     }
-
 }
+

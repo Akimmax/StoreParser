@@ -17,23 +17,19 @@ namespace StoreParser.Data.Repositories
 
         public IEnumerable<Item> GetAll()
         {
-            var items = db.Items.Find(new BsonDocument() { }).ToList();
+            var items = db.Items.Find(_ => true).ToList();
             return items;
         }
 
-        public Item FindFirst(Expression<Func<Item, bool>> predicate)
-        {
-            var item = db.Items.Find(predicate).FirstOrDefault();
-            return item;
-        }
-
         public void Create(Item item)
-        {     
+        {
             db.Items.ReplaceOne(
                 i => i.Id == item.Id, 
                 item,
-                new UpdateOptions { IsUpsert = true }
-            );
+                new UpdateOptions {
+                    IsUpsert = true
+                    } 
+                );
         }
 
         public IEnumerable<Item> Find(Func<Item, Boolean> predicate)
@@ -49,7 +45,16 @@ namespace StoreParser.Data.Repositories
 
         public void CreateAll(IEnumerable<Item> items)
         {
-            throw new NotImplementedException();
+            var bulkOperations = new List<WriteModel<Item>>();
+            foreach (var item in items)
+            {
+                var upsertOne = new ReplaceOneModel<Item>(
+                    Builders<Item>.Filter.Where(x => x.Id == item.Id),
+                    item);
+                upsertOne.IsUpsert = true;
+                bulkOperations.Add(upsertOne);
+            }
+            db.Items.BulkWrite(bulkOperations);
         }
 
         public Item FindFirst(Func<Item, Boolean> predicate)
