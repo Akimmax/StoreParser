@@ -32,7 +32,7 @@ namespace StoreParser.Controllers
                 var newItems = _requestTypeService.AddItems(config);
                 return View("NewItemsList", newItems);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 ViewData["Message"] = "A  exception has occurred";
                 return View("NewItemsList", new List<NewItemDto>());
