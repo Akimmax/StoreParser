@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace StoreParser.Data.Repositories
@@ -43,6 +44,35 @@ namespace StoreParser.Data.Repositories
         {
             db.Items.AddRange(items);
         }
-       
+        //TODO to implement methods
+        public Task<IEnumerable<Item>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Item> GetAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Item>> FindAsync(Func<Item, bool> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Item> FindFirstAsync(Func<Item, bool> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CreateAsync(Item I)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CreateAllAsync(IEnumerable<Item> Is)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
