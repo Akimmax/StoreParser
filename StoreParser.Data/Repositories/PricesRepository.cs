@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace StoreParser.Data.Repositories
 {
@@ -41,6 +42,36 @@ namespace StoreParser.Data.Repositories
         public void CreateAll(IEnumerable<Price> prices)
         {
             db.Prices.AddRange(prices);
+        }
+        //TODO to implement methods
+        public Task<IEnumerable<Price>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Price> GetAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Price>> FindAsync(Func<Price, bool> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Price> FindFirstAsync(Func<Price, bool> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CreateAsync(Price I)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task CreateAllAsync(IEnumerable<Price> Is)
+        {
+            throw new NotImplementedException();
         }
     }
 }
