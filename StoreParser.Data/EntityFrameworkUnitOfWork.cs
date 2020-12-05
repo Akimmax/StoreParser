@@ -2,14 +2,14 @@
 
 namespace StoreParser.Data
 {
-    public class ParserUnitOfWork : IUnitOfWork
+    public class EntityFrameworkUnitOfWork : IUnitOfWork
     {
-        private readonly DatabaseContext dbContext;
+        private readonly EntityFrameworkContext dbContext;
 
-        public ParserUnitOfWork(DatabaseContext context)
+        public EntityFrameworkUnitOfWork(EntityFrameworkContext context)
         {
             dbContext = context;
-            Items = new ItemsRepository(context);
+            Items = new ItemsRepository(context);           
             Prices = new PricesRepository(context);
         }
 

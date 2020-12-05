@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StoreParser.Data
 {
@@ -13,5 +14,11 @@ namespace StoreParser.Data
         void Create(T item);
         void CreateAll(IEnumerable<T> items);
 
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<T> GetAsync(int id);
+        Task<IEnumerable<T>> FindAsync(Func<T, Boolean> predicate);
+        Task<T> FindFirstAsync(Func<T, Boolean> predicate);
+        Task CreateAsync(T I);
+        Task CreateAllAsync(IEnumerable<T> Is);
     }
 }

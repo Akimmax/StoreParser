@@ -19,4 +19,10 @@
     <ProjectReference Include="..\StoreParser.Dtos\StoreParser.Dtos.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AppleWatchTestFile.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
