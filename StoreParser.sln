@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2041
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreParser", "StoreParser\StoreParser.csproj", "{06D1F5DF-1F0D-49D1-A178-DED4935B8249}"
 EndProject
@@ -15,6 +15,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreParser.Dtos", "StoreParser.Dtos\StoreParser.Dtos.csproj", "{2504353D-43DC-469A-8426-F8BF4E76D884}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreParser.Test", "StoreParser.Test\StoreParser.Test.csproj", "{617E68E4-7D4A-47A3-B4C3-2A78A2489343}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{31A437D4-DB19-4515-810F-8C1647690895}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		Dockerfile = Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
